@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery with Tokens</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div class="header">
+  <div class="logo">
+    <img src="aiaiai_logo.jpeg" alt="Aiaiai Logo" />
+  </div>
+  <div class="made-by">Dataset Caption Tool - by Pat</div>
+  <div class="toolbar">
+    <!-- your buttons -->
+    <input type="file" id="fileInput" multiple hidden />
+    <button id="downloadZipBtn">⬇️ Download ZIP</button>
+    <button id="renameFilesBtn">✏️ Rename</button>
+    <button id="deleteDuplicatesBtn">🧹 Duplicates</button>
+    <button id="addTriggerBtn">🔑 Add Trigger</button>
+    <button id="searchReplaceBtn">🔁 Replace</button>
+  </div>
+</div>
+
+
+  <div class="main">
+    <div class="gallery-container">
+      <div id="dropzone" class="dropzone">
+        <span>📂 Drag your files here or click</span>
+        <input type="file" id="fileInput" multiple hidden />
+      </div>
+
+      <div id="gallery" class="gallery"></div>
+    </div>
+
+    <aside class="sidebar">
+      <h3>🧠 My Tokens</h3>
+      
+      <div class="token-input-container">
+        <input type="text" id="newTokenInput" placeholder="Add token..." />
+        <button id="addTokenBtn">➕</button>
+      </div>
+      
+      <div id="myTokens" class="tokens"></div>
+    </aside>
+  </div>
+
+  <div id="previewModal" class="modal hidden">
+    <span id="closeBtn" class="close-btn">✖</span>
+    <img id="previewImage" src="" alt="Preview"/>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
