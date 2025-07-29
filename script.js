@@ -1,3 +1,4 @@
+
 // DOM references
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -27,7 +28,9 @@ dropzone.addEventListener("drop", e => {
   handleFiles(e.dataTransfer.files);
 });
 fileInput.addEventListener("change", () => handleFiles(fileInput.files));
-dropzone.addEventListener("click", () => fileInput.click());
+dropzone.addEventListener("click", () => {
+  fileInput.click();
+});
 
 // Modal
 closeBtn.addEventListener("click", () => previewModal.classList.add("hidden"));
@@ -35,10 +38,11 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") previewModal.classList.add("hidden");
 });
 
-// Close modal by clicking outside the image
+// Cerrar modal haciendo click fuera de la imagen
 previewModal.addEventListener("click", () => {
   previewModal.classList.add("hidden");
 });
+
 
 // File extension helper
 function getFileExtension(filename) {
@@ -109,16 +113,19 @@ function handleFiles(fileList) {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.className = "select-checkbox";
-        checkbox.title = "Select this image";
+        checkbox.title = "Seleccionar esta imagen";
 
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
         deleteBtn.textContent = "🗑️";
         deleteBtn.title = "Delete image and caption";
-        let deleteTimeout;
+        let deleteTimeout; // Variable para almacenar el temporizador
 
+        // Al mantener presionado el botón
         deleteBtn.addEventListener("mousedown", () => {
-          deleteBtn.classList.add("loading");
+          deleteBtn.classList.add("loading"); // activa la animación visual
+
+          // después de 1 segundo, elimina la tarjeta
           deleteTimeout = setTimeout(() => {
             gallery.removeChild(card);
             delete uploadedFiles.images[baseName];
@@ -126,13 +133,19 @@ function handleFiles(fileList) {
           }, 1000);
         });
 
+        // Si el usuario suelta el botón antes de 1 segundo
         deleteBtn.addEventListener("mouseup", cancelDelete);
         deleteBtn.addEventListener("mouseleave", cancelDelete);
 
+        // Función para cancelar la eliminación y la animación
         function cancelDelete() {
-          clearTimeout(deleteTimeout);
-          deleteBtn.classList.remove("loading");
-        }
+          clearTimeout(deleteTimeout); // cancela el temporizador
+          deleteBtn.classList.remove("loading"); // detiene la animación visual
+}
+
+
+
+
 
         const keepBtn = document.createElement("button");
         keepBtn.className = "keep-btn";
@@ -147,14 +160,60 @@ function handleFiles(fileList) {
             .map(span => span.textContent);
           if (existingTokens.includes(selectedText)) return alert("⚠️ Token already exists.");
 
-          createToken(selectedText);
+          const tokenBtn = document.createElement("div");
+          tokenBtn.className = "token-btn";
+          tokenBtn.title = "Click to use this token";
+
+          const span = document.createElement("span");
+          span.textContent = selectedText;
+
+          const x = document.createElement("span");
+          x.className = "delete-token";
+          x.textContent = "✖";
+          x.title = "Remove this token";
+          x.addEventListener("click", e => {
+            e.stopPropagation();
+            tokenBtn.remove();
+          });
+
+          tokenBtn.addEventListener("click", e => {
+            if (e.target.classList.contains("delete-token")) return;
+
+            // Buscar todos los cards con checkbox marcado
+            const selectedCards = [...gallery.querySelectorAll(".card")]
+              .filter(card => card.querySelector(".select-checkbox")?.checked);
+
+            // Si hay al menos uno marcado, se aplica a todos
+            if (selectedCards.length > 0) {
+              selectedCards.forEach(card => {
+                const captionBox = card.querySelector(".caption");
+                const baseName = captionBox.dataset.filename;
+                const space = captionBox.textContent && !captionBox.textContent.endsWith(" ") ? " " : "";
+                captionBox.textContent += space + selectedText;
+                uploadedFiles.captions[baseName] = captionBox.textContent;
+              });
+            } else if (activeCaptionBox) {
+              // Fallback a comportamiento normal si no hay ninguno seleccionado
+              const space = activeCaptionBox.textContent && !activeCaptionBox.textContent.endsWith(" ") ? " " : "";
+              activeCaptionBox.textContent += space + selectedText;
+              uploadedFiles.captions[activeCaptionBox.dataset.filename] = activeCaptionBox.textContent;
+            } else {
+              alert("No caption selected.");
+            }
+          });
+
+
+          tokenBtn.append(span, x);
+          myTokensContainer.appendChild(tokenBtn);
         });
 
-        const controlsRow = document.createElement("div");
-        controlsRow.className = "card-controls";
-        controlsRow.append(checkbox, deleteBtn, keepBtn);
+          const controlsRow = document.createElement("div");
+          controlsRow.className = "card-controls";
+          controlsRow.append(checkbox, deleteBtn, keepBtn);
 
-        card.append(nameLabel, imageWrapper, controlsRow, captionBox);
+          card.append(nameLabel, imageWrapper, controlsRow, captionBox);
+
+
         gallery.appendChild(card);
       };
 
@@ -163,54 +222,7 @@ function handleFiles(fileList) {
   });
 }
 
-function createToken(token) {
-  const existingTokens = Array.from(myTokensContainer.querySelectorAll(".token-btn span"))
-    .map(span => span.textContent);
-  if (existingTokens.includes(token)) {
-    alert("⚠️ This token already exists.");
-    return;
-  }
-
-  const tokenBtn = document.createElement("div");
-  tokenBtn.className = "token-btn";
-  tokenBtn.title = "Click to use this token";
-
-  const span = document.createElement("span");
-  span.textContent = token;
-
-  const x = document.createElement("span");
-  x.className = "delete-token";
-  x.textContent = "✖";
-  x.title = "Remove this token";
-  x.addEventListener("click", e => {
-    e.stopPropagation();
-    tokenBtn.remove();
-  });
-
-  tokenBtn.addEventListener("click", e => {
-    if (e.target.classList.contains("delete-token")) return;
-
-    const selectedCards = [...gallery.querySelectorAll(".card")]
-      .filter(card => card.querySelector(".select-checkbox")?.checked);
-
-    if (selectedCards.length > 0) {
-      selectedCards.forEach(card => {
-        const captionBox = card.querySelector(".caption");
-        const baseName = captionBox.dataset.filename;
-        const space = captionBox.textContent && !captionBox.textContent.endsWith(" ") ? " " : "";
-        captionBox.textContent += space + token;
-        uploadedFiles.captions[baseName] = captionBox.textContent;
-      });
-    } else if (activeCaptionBox) {
-      const space = activeCaptionBox.textContent && !activeCaptionBox.textContent.endsWith(" ") ? " " : "";
-      activeCaptionBox.textContent += space + token;
-      uploadedFiles.captions[activeCaptionBox.dataset.filename] = activeCaptionBox.textContent;
-    } else {
-      alert("No caption selected.");
-    }
-  });
-
-  // Toolbar functionality
+// Toolbar functionality
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("downloadZipBtn")?.addEventListener("click", async () => {
     const zip = new JSZip();
@@ -333,8 +345,126 @@ document.addEventListener("DOMContentLoaded", () => {
     alert(`🔁 ${count} replacements made.`);
   });
 });
+const newTokenInput = document.getElementById("newTokenInput");
+const addTokenBtn = document.getElementById("addTokenBtn");
+
+addTokenBtn.addEventListener("click", () => {
+  const token = newTokenInput.value.trim();
+  if (!token) return;
+
+  const existingTokens = Array.from(myTokensContainer.querySelectorAll(".token-btn span"))
+    .map(span => span.textContent);
+  if (existingTokens.includes(token)) {
+    alert("⚠️ Ese token ya existe.");
+    return;
+  }
+
+  const tokenBtn = document.createElement("div");
+  tokenBtn.className = "token-btn";
+  tokenBtn.title = "Click to use this token";
+
+  const span = document.createElement("span");
+  span.textContent = token;
+
+  const x = document.createElement("span");
+  x.className = "delete-token";
+  x.textContent = "✖";
+  x.title = "Remove this token";
+  x.addEventListener("click", e => {
+    e.stopPropagation();
+    tokenBtn.remove();
+  });
+
+  tokenBtn.addEventListener("click", e => {
+    if (e.target.classList.contains("delete-token")) return;
+
+    const selectedCards = [...gallery.querySelectorAll(".card")]
+      .filter(card => card.querySelector(".select-checkbox")?.checked);
+
+    if (selectedCards.length > 0) {
+      selectedCards.forEach(card => {
+        const captionBox = card.querySelector(".caption");
+        const baseName = captionBox.dataset.filename;
+        const space = captionBox.textContent && !captionBox.textContent.endsWith(" ") ? " " : "";
+        captionBox.textContent += space + token;
+        uploadedFiles.captions[baseName] = captionBox.textContent;
+      });
+    } else if (activeCaptionBox) {
+      const space = activeCaptionBox.textContent && !activeCaptionBox.textContent.endsWith(" ") ? " " : "";
+      activeCaptionBox.textContent += space + token;
+      uploadedFiles.captions[activeCaptionBox.dataset.filename] = activeCaptionBox.textContent;
+    } else {
+      alert("No caption selected.");
+    }
+  });
+
+  tokenBtn.append(span, x);
+  myTokensContainer.appendChild(tokenBtn);
+  newTokenInput.value = "";
+});
+
+
+function createToken(token) {
+  const existingTokens = Array.from(myTokensContainer.querySelectorAll(".token-btn span"))
+    .map(span => span.textContent);
+  if (existingTokens.includes(token)) {
+    alert("⚠️ Ese token ya existe.");
+    return;
+  }
+
+  const tokenBtn = document.createElement("div");
+  tokenBtn.className = "token-btn";
+  tokenBtn.title = "Click to use this token";
+
+  const span = document.createElement("span");
+  span.textContent = token;
+
+  const x = document.createElement("span");
+  x.className = "delete-token";
+  x.textContent = "✖";
+  x.title = "Remove this token";
+  x.addEventListener("click", e => {
+    e.stopPropagation();
+    tokenBtn.remove();
+  });
+
+  tokenBtn.addEventListener("click", e => {
+    if (e.target.classList.contains("delete-token")) return;
+
+    const selectedCards = [...gallery.querySelectorAll(".card")]
+      .filter(card => card.querySelector(".select-checkbox")?.checked);
+
+    if (selectedCards.length > 0) {
+      selectedCards.forEach(card => {
+        const captionBox = card.querySelector(".caption");
+        const baseName = captionBox.dataset.filename;
+        const space = captionBox.textContent && !captionBox.textContent.endsWith(" ") ? " " : "";
+        captionBox.textContent += space + token;
+        uploadedFiles.captions[baseName] = captionBox.textContent;
+      });
+    } else if (activeCaptionBox) {
+      const space = activeCaptionBox.textContent && !activeCaptionBox.textContent.endsWith(" ") ? " " : "";
+      activeCaptionBox.textContent += space + token;
+      uploadedFiles.captions[activeCaptionBox.dataset.filename] = activeCaptionBox.textContent;
+    } else {
+      alert("No caption selected.");
+    }
+  });
 
   tokenBtn.append(span, x);
   myTokensContainer.appendChild(tokenBtn);
   newTokenInput.value = "";
 }
+
+addTokenBtn.addEventListener("click", () => {
+  const token = newTokenInput.value.trim();
+  if (token) createToken(token);
+});
+
+newTokenInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const token = newTokenInput.value.trim();
+    if (token) createToken(token);
+  }
+});
