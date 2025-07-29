@@ -1,6 +1,10 @@
 # 🖼️ Aiaiai's Dataset Caption Tool - By Pat 
 
-# If you have cool ideas to be added send them to my at drios.motion@gmail.com
+###### _If you have cool ideas to be added send them to my at drios.motion@gmail.com_
+
+Try the tool here: 
+
+### https://driosmotion.github.io/DatasetCaptionTool/
 
 This is a lightweight web application for managing image-caption pairs, perfect for preparing datasets for AI training workflows such as LoRA, BLIP, or CLIP. Easily upload, view, edit, manage, and export your dataset content — all from your browser.
 
