@@ -210,6 +210,130 @@ function createToken(token) {
     }
   });
 
+  // Toolbar functionality
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("downloadZipBtn")?.addEventListener("click", async () => {
+    const zip = new JSZip();
+
+    for (const baseName in uploadedFiles.images) {
+      const file = uploadedFiles.images[baseName];
+      zip.file(`${baseName}${getFileExtension(file.name)}`, file);
+    }
+
+    for (const baseName in uploadedFiles.captions) {
+      const text = uploadedFiles.captions[baseName] || "(No caption)";
+      zip.file(`${baseName}.txt`, text);
+    }
+
+    const content = await zip.generateAsync({ type: "blob" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(content);
+    link.download = `${currentZipName}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
+  document.getElementById("renameFilesBtn")?.addEventListener("click", () => {
+    const newName = prompt("Enter new base name:");
+    if (!newName) return;
+    currentZipName = newName;
+
+    let counter = 1;
+    const pad = (n, l) => n.toString().padStart(l, "0");
+    const newImages = {}, newCaptions = {};
+
+    [...gallery.children].forEach(card => {
+      const nameDiv = card.querySelector(".filename");
+      const captionDiv = card.querySelector(".caption");
+      const oldBase = nameDiv.textContent.replace(/\.[^/.]+$/, "");
+      const ext = getFileExtension(uploadedFiles.images[oldBase]?.name || ".jpg");
+      const newBase = `${newName}_${pad(counter++, 3)}`;
+
+      nameDiv.textContent = newBase + ext;
+      captionDiv.dataset.filename = newBase;
+
+      const file = uploadedFiles.images[oldBase];
+      if (file) {
+        Object.defineProperty(file, "name", { value: newBase + ext, writable: true });
+        newImages[newBase] = file;
+      }
+
+      newCaptions[newBase] = uploadedFiles.captions[oldBase];
+    });
+
+    uploadedFiles.images = newImages;
+    uploadedFiles.captions = newCaptions;
+
+    alert("✅ Files renamed.");
+  });
+
+  document.getElementById("deleteDuplicatesBtn")?.addEventListener("click", () => {
+    const seen = {}, removed = [];
+    [...gallery.children].forEach(card => {
+      const nameDiv = card.querySelector(".filename");
+      if (!nameDiv) return;
+
+      const filename = nameDiv.textContent.trim();
+      const baseName = filename.replace(/\.[^/.]+$/, "").toLowerCase().replace(/\s*\(\d+\)|_copy|\s*copy/i, "");
+      const file = uploadedFiles.images[baseName];
+      if (!file) return;
+
+      const key = `${baseName}_${file.size}`;
+      if (seen[key]) {
+        gallery.removeChild(card);
+        delete uploadedFiles.images[baseName];
+        delete uploadedFiles.captions[baseName];
+        removed.push(baseName);
+      } else {
+        seen[key] = true;
+      }
+    });
+
+    alert(`🧹 Removed ${removed.length} suspected duplicates.`);
+  });
+
+  document.getElementById("addTriggerBtn")?.addEventListener("click", () => {
+    const trigger = prompt("Enter trigger word:");
+    if (!trigger) return;
+
+    [...gallery.children].forEach(card => {
+      const captionDiv = card.querySelector(".caption");
+      const baseName = captionDiv.dataset.filename;
+      const caption = uploadedFiles.captions[baseName];
+      if (!caption.startsWith(trigger)) {
+        const updated = `${trigger} ${caption}`;
+        captionDiv.textContent = updated;
+        uploadedFiles.captions[baseName] = updated;
+      }
+    });
+
+    alert(`✅ Trigger "${trigger}" added to all captions.`);
+  });
+
+  document.getElementById("searchReplaceBtn")?.addEventListener("click", () => {
+    const search = prompt("Word to search?");
+    if (!search) return;
+    const replace = prompt(`Replace "${search}" with:`);
+    if (replace === null) return;
+
+    let count = 0;
+    [...gallery.children].forEach(card => {
+      const captionDiv = card.querySelector(".caption");
+      const baseName = captionDiv.dataset.filename;
+      const original = uploadedFiles.captions[baseName];
+      if (original.includes(search)) {
+        const updated = original.split(search).join(replace);
+        captionDiv.textContent = updated;
+        uploadedFiles.captions[baseName] = updated;
+        count++;
+      }
+    });
+
+    alert(`🔁 ${count} replacements made.`);
+  });
+});
+
   tokenBtn.append(span, x);
   myTokensContainer.appendChild(tokenBtn);
   newTokenInput.value = "";
