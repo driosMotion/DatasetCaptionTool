@@ -345,64 +345,24 @@ document.addEventListener("DOMContentLoaded", () => {
     alert(`🔁 ${count} replacements made.`);
   });
 });
+
 const newTokenInput = document.getElementById("newTokenInput");
 const addTokenBtn = document.getElementById("addTokenBtn");
 
 addTokenBtn.addEventListener("click", () => {
-  const token = newTokenInput.value.trim();
-  if (!token) return;
-
-  const existingTokens = Array.from(myTokensContainer.querySelectorAll(".token-btn span"))
-    .map(span => span.textContent);
-  if (existingTokens.includes(token)) {
-    alert("⚠️ Ese token ya existe.");
-    return;
-  }
-
-  const tokenBtn = document.createElement("div");
-  tokenBtn.className = "token-btn";
-  tokenBtn.title = "Click to use this token";
-
-  const span = document.createElement("span");
-  span.textContent = token;
-
-  const x = document.createElement("span");
-  x.className = "delete-token";
-  x.textContent = "✖";
-  x.title = "Remove this token";
-  x.addEventListener("click", e => {
-    e.stopPropagation();
-    tokenBtn.remove();
-  });
-
-  tokenBtn.addEventListener("click", e => {
-    if (e.target.classList.contains("delete-token")) return;
-
-    const selectedCards = [...gallery.querySelectorAll(".card")]
-      .filter(card => card.querySelector(".select-checkbox")?.checked);
-
-    if (selectedCards.length > 0) {
-      selectedCards.forEach(card => {
-        const captionBox = card.querySelector(".caption");
-        const baseName = captionBox.dataset.filename;
-        const space = captionBox.textContent && !captionBox.textContent.endsWith(" ") ? " " : "";
-        captionBox.textContent += space + token;
-        uploadedFiles.captions[baseName] = captionBox.textContent;
-      });
-    } else if (activeCaptionBox) {
-      const space = activeCaptionBox.textContent && !activeCaptionBox.textContent.endsWith(" ") ? " " : "";
-      activeCaptionBox.textContent += space + token;
-      uploadedFiles.captions[activeCaptionBox.dataset.filename] = activeCaptionBox.textContent;
-    } else {
-      alert("No caption selected.");
-    }
-  });
-
-  tokenBtn.append(span, x);
-  myTokensContainer.appendChild(tokenBtn);
+  const tokens = newTokenInput.value.split(",").map(t => t.trim()).filter(t => t);
+  tokens.forEach(token => createToken(token));
   newTokenInput.value = "";
 });
 
+newTokenInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const tokens = newTokenInput.value.split(",").map(t => t.trim()).filter(t => t);
+    tokens.forEach(token => createToken(token));
+    newTokenInput.value = "";
+  }
+});
 
 function createToken(token) {
   const existingTokens = Array.from(myTokensContainer.querySelectorAll(".token-btn span"))
@@ -453,18 +413,4 @@ function createToken(token) {
 
   tokenBtn.append(span, x);
   myTokensContainer.appendChild(tokenBtn);
-  newTokenInput.value = "";
 }
-
-addTokenBtn.addEventListener("click", () => {
-  const token = newTokenInput.value.trim();
-  if (token) createToken(token);
-});
-
-newTokenInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    const token = newTokenInput.value.trim();
-    if (token) createToken(token);
-  }
-});
