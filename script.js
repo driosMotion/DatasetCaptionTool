@@ -16,22 +16,6 @@ const uploadedFiles = {
   captions: {}
 };
 
-// Drag and Drop
-dropzone.addEventListener("dragover", e => {
-  e.preventDefault();
-  dropzone.classList.add("hover");
-});
-dropzone.addEventListener("dragleave", () => dropzone.classList.remove("hover"));
-dropzone.addEventListener("drop", e => {
-  e.preventDefault();
-  dropzone.classList.remove("hover");
-  handleFiles(e.dataTransfer.files);
-});
-fileInput.addEventListener("change", () => handleFiles(fileInput.files));
-dropzone.addEventListener("click", () => {
-  fileInput.click();
-});
-
 // Modal
 closeBtn.addEventListener("click", () => previewModal.classList.add("hidden"));
 document.addEventListener("keydown", e => {
@@ -278,31 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
     uploadedFiles.captions = newCaptions;
 
     alert("✅ Files renamed.");
-  });
-
-  document.getElementById("deleteDuplicatesBtn")?.addEventListener("click", () => {
-    const seen = {}, removed = [];
-    [...gallery.children].forEach(card => {
-      const nameDiv = card.querySelector(".filename");
-      if (!nameDiv) return;
-
-      const filename = nameDiv.textContent.trim();
-      const baseName = filename.replace(/\.[^/.]+$/, "").toLowerCase().replace(/\s*\(\d+\)|_copy|\s*copy/i, "");
-      const file = uploadedFiles.images[baseName];
-      if (!file) return;
-
-      const key = `${baseName}_${file.size}`;
-      if (seen[key]) {
-        gallery.removeChild(card);
-        delete uploadedFiles.images[baseName];
-        delete uploadedFiles.captions[baseName];
-        removed.push(baseName);
-      } else {
-        seen[key] = true;
-      }
-    });
-
-    alert(`🧹 Removed ${removed.length} suspected duplicates.`);
   });
 
   document.getElementById("addTriggerBtn")?.addEventListener("click", () => {
