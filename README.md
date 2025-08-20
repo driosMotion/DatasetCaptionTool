@@ -1,96 +1,36 @@
-# 🖼️ Aiaiai's Dataset Caption Tool - By Pat 
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-###### _If you have cool ideas to be added send them to my at drios.motion@gmail.com_
+## Getting Started
 
-Try the tool here: 
+First, run the development server:
 
-### https://driosmotion.github.io/DatasetCaptionTool/
-
-This is a lightweight web application for managing image-caption pairs, perfect for preparing datasets for AI training workflows such as LoRA, BLIP, or CLIP. Easily upload, view, edit, manage, and export your dataset content — all from your browser.
-
----
-
-## ✨ Features
-
-- 📁 **Drag & drop support** for images and `.txt` captions  
-- 🖼️ **Zoomable image preview** on click  
-- 🧠 **Token manager** to save and reuse keywords or phrases  
-- ✅ **Checkbox selection** to apply tokens to multiple captions at once  
-- 🧹 **Duplicate remover** based on filename and size  
-- ✏️ **Inline caption editing**, instantly saved  
-- 🔁 **Search & replace tool** across all captions  
-- 🚀 **Trigger word injection** to prepend a tag to every caption  
-- 🔄 **Batch file renamer** with zero config  
-- 🗑️ **Hold-to-delete button** with visual feedback  
-- 📦 **Download .zip** containing all images and captions  
-- 🌙 **Dark mode**, fully responsive UI  
-- 📌 **Always-visible input box** for quick token creation  
-
----
-
-## 📁 Project Structure
-
-```
-📁 caption-tool/
-├── index.html       # Main UI layout
-├── style.css        # Full dark-mode responsive design
-├── script.js        # App functionality and logic
-└── README.md        # This file
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🚀 Getting Started
+You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-1. **Clone or download** the project to your computer:
-   ```bash
-   git clone https://github.com/your-username/caption-tool.git
-   ```
-2. Open `index.html` in any modern browser.
-3. Drag and drop your images (`.jpg`, `.png`, etc.) and caption files (`.txt`) into the dropzone.
-4. Edit captions, select tokens, apply them, and export when ready.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## 🌐 Live Demo
+To learn more about Next.js, take a look at the following resources:
 
-You can publish the app for free using **GitHub Pages**:
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-1. Push this project to a GitHub repository
-2. Go to the repo → **Settings** → **Pages**
-3. Set **Source** to the `main` branch and root folder
-4. Your site will be available at:
-   ```
-   https://your-username.github.io/caption-tool/
-   ```
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-## 🔒 No Backend – Privacy First
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-This tool runs 100% in the browser. No images or captions are uploaded or stored externally.
-
----
-
-## 🧠 Ideal for...
-
-- AI dataset preparation
-- LoRA training
-- Prompt crafting and prompt engineering
-- Caption curation for Stable Diffusion, Midjourney, etc.
-- Anyone who wants a fast, local captioning workflow
-
----
-
-## 📌 Future Ideas (Contributions welcome!)
-
-- 🤖 Mini caption generator (e.g., BLIP, CLIPCap API or local inference)
-- 🧮 Token frequency analyzer
-- 🖼️ Support for metadata like tags, categories, etc.
-- 🗂️ Organize into folders/projects
-
----
-
-## 📜 License
-
-MIT License – free for personal and commercial use.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
