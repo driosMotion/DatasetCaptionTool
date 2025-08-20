@@ -1,0 +1,17 @@
+# build / deps
+node_modules
+.next
+.out
+dist
+.swc
+.turbo
+.cache
+
+# env / local
+.env
+.env.*
+*.local
+
+# misc
+.DS_Store
+.vercel
