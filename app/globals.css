@@ -57,42 +57,60 @@ a { color: inherit; text-decoration: none; }
 .logo img { height:22px; width:auto; border-radius:8px; display:block; }
 .made-by { color:#ccc; font-size:14px; font-style:italic; user-select:none; margin-right:10px; }
 
-/* ===== Top controls ===== */
-.toolbar {
-  display:flex; flex-wrap:wrap; gap:10px;
-  padding:10px 12px;                /* breathing room */
-  background: var(--panel-2);
-  color:white; align-items:center; width:100%;
-  border-radius:8px;
-}
-.toolbar button {
-  background:#333; border:0; padding:8px 12px;
-  border-radius:4px; cursor:pointer; color:white;
-}
-.toolbar button:hover { background:#555; }
-
-/* Projects area (unified with toolbar background; seam removed) */
-.user-area {
-  padding:10px;
-  display:grid; gap:8px; grid-template-columns:repeat(6, minmax(0,1fr));
-  align-items:center;
-  background: var(--panel-2);
-  /* border-top:1px solid var(--border);  <-- intentionally removed */
-}
-.status-line { grid-column:1 / -1; font-size:12px; color:var(--muted); }
-.user-area select, .user-area input {
-  padding:8px; background:#1f1f1f; color:#eee;
-  border:1px solid var(--border-2); border-radius:6px;
-}
-.user-area button {
-  background:#333; color:#fff; border:1px solid var(--border-2);
-  border-radius:6px; padding:8px 12px; cursor:pointer;
-}
-.user-area button:hover { background:#555; }
-
 /* ===== Main layout ===== */
 .main { display:flex; gap:20px; padding:20px; height:calc(100vh - 140px); box-sizing:border-box; }
 .gallery-container { flex:1; width:100%; padding:0 20px; }
+
+
+/* === Unified bars (Toolbar + ProjectsBar) === */
+.ui-bar{
+  display:flex; align-items:center; gap:12px;
+  background: var(--panel-2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 12px;
+  margin:10px 12px;
+  white-space:nowrap;
+  overflow-x:auto; /* scroll instead of wrapping */
+}
+
+/* Buttons */
+.ui-bar .ui-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px;
+  height:34px; line-height:1;
+  border-radius:8px;
+  border:1px solid #4a4a4a;
+  background:#2b2b2b;
+  color:#eee;
+  text-decoration:none;
+  cursor:pointer; user-select:none;
+  -webkit-appearance:none; appearance:none;
+}
+.ui-bar .ui-btn:hover{ filter:brightness(1.08); }
+.ui-bar .ui-btn:disabled{ opacity:.5; cursor:not-allowed; }
+.ui-bar .ui-btn.ui-btn--danger{
+  background:#c63c3c; border-color:#a63232; color:#fff;
+}
+
+/* Inputs / Selects */
+.ui-bar .ui-input,
+.ui-bar .ui-select{
+  height:34px; padding:6px 10px;
+  border-radius:8px;
+  border:1px solid #4a4a4a;
+  background:#1b1b1b;
+  color:#eee;
+  -webkit-appearance:none; appearance:none;
+  outline:none;
+}
+.ui-bar .ui-input:focus,
+.ui-bar .ui-select:focus,
+.ui-bar .ui-btn:focus{
+  outline:2px solid #666;
+  outline-offset:2px;
+}
+
 
 /* Dropzone */
 .dropzone {
