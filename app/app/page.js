@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 
 import useAuthGate from '@/app/app/hooks/useAuthGate';
-import useTokens from '@/app/app/hooks/useTokens';
+import useProjectTokens from '@/app/app/hooks/useProjectTokens';
 import useProjects from '@/app/app/hooks/useProjects';
 import useImages from '@/app/app/hooks/useImages';
 
@@ -21,8 +21,17 @@ export default function AppPage() {
   const { email, ready } = useAuthGate();
   const [status, setStatus] = useState('');
 
-  // --- Tokens
-  const { tokens, addToken, deleteToken } = useTokens('ct_tokens');
+  // Get the current user id (once) so we can scope tokens by user + project
+const [userId, setUserId] = useState(null);
+useEffect(() => {
+  (async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) setUserId(data?.user?.id ?? null);
+  })();
+}, []);
+
+
+
 
   // --- Constants
   const BUCKET = process.env.NEXT_PUBLIC_SUPABASE_BUCKET;
@@ -36,6 +45,12 @@ export default function AppPage() {
     createProject,
     deleteProject,
   } = useProjects({ supabase, BUCKET, setStatus, ready });
+
+  const { tokens, addToken, addTokens, deleteToken } = useProjectTokens({
+  projectId,
+  userId,
+  setStatus,
+});
 
   // --- Images (NOTE: hook is called once; we destructure its fields)
   const {
@@ -311,9 +326,11 @@ export default function AppPage() {
           tokens={tokens}
           tokenInputRef={tokenInputRef}
           onAddTokenClick={() => {
-            const val = tokenInputRef.current?.value?.trim();
-            if (!val) { setStatus('Type a token first'); return; }
-            addToken(val);
+              if (!projectId) { setStatus('Select a project first'); return; }
+               const val = tokenInputRef.current?.value || '';
+               if (!val.trim()) { setStatus('Type token(s) first'); return; }
+               // supports comma/semicolon/newlines: "car, red door; truck"
+               addTokens(val);
             tokenInputRef.current.value = '';
           }}
           onUseToken={handleUseTrigger}
