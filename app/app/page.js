@@ -159,7 +159,7 @@ export default function AppPage() {
         const img = images.find((i) => i.id === id);
         if (!img) continue;
         const start = (el && document.activeElement === el) ? el.selectionStart : (img.caption || '').length;
-        const end   = (el && document.activeElement === el) ? el.selectionEnd   : (img.caption || '').length;
+        const end = (el && document.activeElement === el) ? el.selectionEnd : (img.caption || '').length;
         const { text } = insertToken(img.caption || '', token, start, end);
         captionChange(id, text);
         applied++;
@@ -178,7 +178,7 @@ export default function AppPage() {
     const { text, caret } = insertToken(el.value ?? '', token, el.selectionStart, el.selectionEnd);
     captionChange(lastFocusedImageId, text);
     requestAnimationFrame(() => {
-      try { el.focus(); el.setSelectionRange(caret, caret); } catch {}
+      try { el.focus(); el.setSelectionRange(caret, caret); } catch { }
     });
     setStatus('Token added');
   };
@@ -203,12 +203,19 @@ export default function AppPage() {
   return (
     <div className="app-root">
       {/* Header (logo + title + Sign Out) */}
-      <div className="header" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 12px' }}>
+            <div className="header" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '6px 12px' }}>
         <div className="logo">
-          <img src="/aiaiai_logo.jpeg" alt="Aiaiai Logo" style={{ height: 22, width: 'auto', display: 'block' }} />
+          <img src="/aiaiai_logo.jpeg" alt="Aiaiai Logo" style={{ height: 50, width: 'auto', display: 'block' }} />
         </div>
-        <div className="made-by" style={{ flex: 0 }}>Dataset Caption Tool - by Pat</div>
-        <div style={{ marginLeft: 'auto' }}>
+        <div className="made-by" style={{ flex: 0, whiteSpace: 'nowrap' }}>
+          Dataset Caption Tool - by Pat
+        </div>
+
+        {/* Right side: Signed in + Sign Out */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div className="signed-in" style={{ whiteSpace: 'nowrap', fontSize: 12, opacity: 0.85 }}>
+            Signed in as {email}
+          </div>
           <button
             onClick={async () => {
               await supabase.auth.signOut({ scope: 'local' });
@@ -224,8 +231,9 @@ export default function AppPage() {
         </div>
       </div>
 
+
       {/* Projects + status */}
-      <ProjectsBar
+            <ProjectsBar
         email={email}
         status={status}
         projects={projects}
@@ -249,21 +257,22 @@ export default function AppPage() {
         onRefresh={fetchProjects}
       />
 
-      {/* Toolbar BELOW the projects area */}
-      <div className="toolbar-wrapper" style={{ padding: '10px 12px', marginTop: 6, background: '#141414', borderRadius: 8 }}>
-        <Toolbar
-          fileInputRef={fileInputRef}
-          onFileInputChange={(e) => handleFileInputChange(e, projectId)}
-          onDownloadZip={() => downloadZipAction({ projectId })}
-          onRenameFiles={() =>
-            renameFilesAction({ projectId, fetchImagesAfter: (pid) => fetchImages(pid || projectId) })
-          }
-          onFindDuplicates={() =>
-            findDuplicatesAction({ projectId, fetchImagesAfter: (pid) => fetchImages(pid || projectId) })
-          }
-          onAddPrefix={() => addPrefix({ projectId, targetId: lastFocusedImageId })}
-          onSearchReplace={() => searchReplace({ projectId })}
-        />
+
+            {/* Toolbar BELOW the projects area */}
+            <div className="toolbar-wrapper" >
+              <Toolbar
+        fileInputRef={fileInputRef}
+        onFileInputChange={(e) => handleFileInputChange(e, projectId)}
+        onDownloadZip={() => downloadZipAction({ projectId })}
+        onRenameFiles={() =>
+          renameFilesAction({ projectId, fetchImagesAfter: (pid) => fetchImages(pid || projectId) })
+        }
+        onFindDuplicates={() =>
+          findDuplicatesAction({ projectId, fetchImagesAfter: (pid) => fetchImages(pid || projectId) })
+        }
+        onAddPrefix={() => addPrefix({ projectId, targetId: lastFocusedImageId })}
+        onSearchReplace={() => searchReplace({ projectId })}
+      />
       </div>
 
       {/* Main layout */}

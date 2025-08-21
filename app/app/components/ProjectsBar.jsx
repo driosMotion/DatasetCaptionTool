@@ -2,7 +2,6 @@
 import React from 'react';
 
 export default function ProjectsBar({
-  email,
   status,
   projects,
   projectId,
@@ -14,16 +13,37 @@ export default function ProjectsBar({
   onRefresh,              // () => void
 }) {
   return (
-    <div className="user-area">
-      <div className="status-line" id="authStatus">
-        Signed in as {email} {status ? `• ${status}` : ''}
-        <button style={{ marginLeft: 8 }} onClick={onRefresh}>↻ Refresh</button>
-      </div>
+    <div className="ui-bar projects-bar" role="region" aria-label="Projects bar">
+      {/* status (truncate to avoid pushing controls) */}
+      {status ? (
+        <span
+          style={{
+            fontSize: 12,
+            opacity: 0.9,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: 280,
+          }}
+          title={status}
+        >
+          • {status}
+        </span>
+      ) : null}
 
+      {/* refresh */}
+      <button className="ui-btn" onClick={onRefresh} type="button" title="Refresh projects">
+        ↻ Refresh
+      </button>
+
+      {/* project select */}
       <select
+        className="ui-select"
         id="projectSelect"
+        aria-label="Select project"
         value={projectId}
         onChange={(e) => onChangeProject(e.target.value)}
+        style={{ minWidth: 220 }}
       >
         <option value="">— Select project —</option>
         {projects.map((p) => (
@@ -33,36 +53,33 @@ export default function ProjectsBar({
         ))}
       </select>
 
+      {/* new project input */}
       <input
+        className="ui-input"
         id="newProjectName"
         type="text"
         placeholder="New project name"
+        aria-label="New project name"
         value={newProjectName}
         onChange={(e) => onChangeNewProjectName(e.target.value)}
+        style={{ width: 240 }}
       />
 
-      <div style={{ display: 'inline-flex', gap: 8, marginTop: 8 }}>
-        <button id="btnCreateProject" onClick={onCreateProject}>
-          Create
-        </button>
-        <button
-          id="btnDeleteProject"
-          onClick={onDeleteProject}
-          disabled={!projectId}
-          style={{
-            background: '#d32f2f',
-            color: '#fff',
-            border: 0,
-            borderRadius: 4,
-            padding: '6px 10px',
-            opacity: projectId ? 1 : 0.5,
-            cursor: projectId ? 'pointer' : 'not-allowed',
-          }}
-          title={projectId ? 'Delete selected project and all its files' : 'Select a project first'}
-        >
-          Delete Project
-        </button>
-      </div>
+      {/* actions */}
+      <button className="ui-btn" id="btnCreateProject" onClick={onCreateProject} type="button">
+        Create
+      </button>
+
+      <button
+        className="ui-btn ui-btn--danger"
+        id="btnDeleteProject"
+        onClick={onDeleteProject}
+        type="button"
+        disabled={!projectId}
+        title={projectId ? 'Delete selected project and all its files' : 'Select a project first'}
+      >
+        Delete Project
+      </button>
     </div>
   );
 }
