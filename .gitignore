@@ -13,10 +13,6 @@ dist
 *.local
 
 # misc
-.DS_Store
 .vercel
-
-# Next.js build
-.next.next
 .DS_Store
 node_modules
