@@ -285,7 +285,7 @@ useEffect(() => {
         onFindDuplicates={() =>
           findDuplicatesAction({ projectId, fetchImagesAfter: (pid) => fetchImages(pid || projectId) })
         }
-        onAddPrefix={() => addPrefix({ projectId, targetId: lastFocusedImageId })}
+        onAddPrefix={() => addPrefix({ projectId, targetIds: images.map(img => img.id) })}
         onSearchReplace={() => searchReplace({ projectId })}
       />
       </div>
